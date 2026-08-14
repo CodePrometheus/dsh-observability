@@ -32,7 +32,9 @@
     "src"
   ],
   "dsh": {
-    "bundle": "cordis.patch.yml"
+    "bundle": {
+      "patch": "./cordis.patch.yml"
+    }
   },
   "scripts": {
     "build": "tsc -p tsconfig.json",
