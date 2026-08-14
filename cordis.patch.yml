@@ -1,0 +1,28 @@
+# The dsh-observability bundle patch: export agent sessions as OTLP traces.
+#
+# The telemetry Service Definition accepts exactly one backend per context and
+# throws on a duplicate, so the base profile's OTLP-logs row must go off before
+# this one goes on.
+
+- id: session-telemetry-otel
+  disabled: true
+
+- insert:
+    # Sharing stays off until DSH_OBSERVABILITY_MODE says otherwise: configuring
+    # a collector endpoint is not consent to upload session content, which
+    # includes user messages, tool arguments, and command output.
+    - id: session-telemetry-otlp-traces
+      name: dsh-observability
+      config:
+        mode: !!js >-
+          process.env.DSH_OBSERVABILITY_MODE ?? 'DISABLED'
+        exporter:
+          url: !!js >-
+            process.env.DSH_OBSERVABILITY_OTLP_URL ?? 'http://127.0.0.1:4318/v1/traces'
+          compression: gzip
+          timeoutMillis: 1000
+        processor:
+          scheduledDelayMillis: 10000
+          maxQueueSize: 2048
+          maxExportBatchSize: 512
+          exportTimeoutMillis: 1500

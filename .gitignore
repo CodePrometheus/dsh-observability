@@ -238,3 +238,9 @@ Network Trash Folder
 Temporary Items
 .apdisk
 
+### Agent workspace
+.agents/
+
+### Build output
+lib/
+

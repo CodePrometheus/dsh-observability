@@ -1,0 +1,42 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node: [22, 24, 26]
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: ${{ matrix.node }}
+      - run: npm ci
+      - run: npm run typecheck
+      - run: npm test
+      # The e2e fixture loads lib/index.js, so it needs the build first.
+      - run: npm run build
+      - run: npm run test:e2e
+      # publint reads the packed tarball, so it also needs the build.
+      - run: npm run hygiene
+
+  # Early warning against upstream churn: the harness is in developer preview
+  # with no compatibility promise, so rehearse against the newest published
+  # versions rather than the pinned ones. Failures here are informational.
+  upstream-canary:
+    runs-on: ubuntu-latest
+    continue-on-error: true
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 24
+      - run: node .github/scripts/bump-upstream.mjs
+      - run: npm install
+      - run: npm run typecheck
+      - run: npm test

@@ -1,0 +1,32 @@
+{
+  // The build face, mirroring the harness's own compiler options minus its
+  // workspace `paths`: this package resolves @deepseek-ai/* from node_modules,
+  // not from a source checkout. `rewriteRelativeImportExtensions` is what lets
+  // local imports keep the repo's explicit `.ts` specifiers while the emitted
+  // JS and declarations reference `.js`. Tests check under tsconfig.test.json.
+  "compilerOptions": {
+    "target": "es2024",
+    "module": "esnext",
+    "moduleResolution": "bundler",
+    "allowImportingTsExtensions": true,
+    "rewriteRelativeImportExtensions": true,
+    "verbatimModuleSyntax": false,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "declaration": true,
+    "declarationMap": true,
+    "sourceMap": true,
+    "declarationDir": "lib/types",
+    "outDir": "lib",
+    "rootDir": "src",
+    "strict": true,
+    "noUncheckedIndexedAccess": true,
+    "exactOptionalPropertyTypes": true,
+    "noImplicitOverride": true,
+    "noFallthroughCasesInSwitch": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "types": ["node"]
+  },
+  "include": ["src/**/*.ts"]
+}

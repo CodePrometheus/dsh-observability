@@ -1,0 +1,24 @@
+{
+  "$schema": "https://unpkg.com/knip@6/schema.json",
+  "exclude": [
+    "duplicates"
+  ],
+  "entry": [
+    "tests/**/*.spec.ts",
+    "tests/**/*.e2e.ts",
+    "tests/fixtures/observability-driver.ts",
+    "tests/fixtures/mock-llm.ts"
+  ],
+  "project": [
+    "src/**/*.ts",
+    "tests/**/*.ts"
+  ],
+  "ignoreDependencies": [
+    "@deepseek-ai/cordis-plugin-logger-console",
+    "@deepseek-ai/dsh-agent-spine-demo",
+    "@deepseek-ai/dsh-bash-local",
+    "@deepseek-ai/dsh-session-checkpoint-policy",
+    "@deepseek-ai/dsh-session-persistence-jsonl",
+    "@deepseek-ai/dsh-subprocess-local"
+  ]
+}
