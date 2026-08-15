@@ -52,5 +52,20 @@ jobs:
       - run: npm run test:e2e
       - run: npm run hygiene
 
+      # Publishing is idempotent: re-running a tag, or tagging a version that
+      # was published by hand, verifies the build and stops instead of failing
+      # on the registry's immutable-version rule.
+      - name: Check whether this version is already published
+        id: published
+        run: |
+          version="$(node -p "require('./package.json').version")"
+          if npm view "dsh-observability@${version}" version >/dev/null 2>&1; then
+            echo "already=true" >> "$GITHUB_OUTPUT"
+            echo "dsh-observability@${version} is already on the registry; skipping publish."
+          else
+            echo "already=false" >> "$GITHUB_OUTPUT"
+          fi
+
       # No --provenance flag: trusted publishing attaches provenance itself.
-      - run: npm publish
+      - if: steps.published.outputs.already == 'false'
+        run: npm publish
