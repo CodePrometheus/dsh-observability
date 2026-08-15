@@ -4,6 +4,14 @@
   "version": "0.1.0",
   "type": "module",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/CodePrometheus/dsh-observability.git"
+  },
+  "homepage": "https://github.com/CodePrometheus/dsh-observability#readme",
+  "bugs": {
+    "url": "https://github.com/CodePrometheus/dsh-observability/issues"
+  },
   "keywords": [
     "dsh-plugin",
     "deepseek-harness",

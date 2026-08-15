@@ -1,0 +1,56 @@
+name: Release
+
+# Publishes on a pushed `v*` tag. Authentication is npm trusted publishing
+# (OIDC), so no NPM_TOKEN secret exists to leak or rotate, and the publish
+# carries a provenance attestation automatically.
+#
+# npm cannot create a package through OIDC: the trusted-publisher configuration
+# is per package and the package must already exist. The first version is
+# published manually once; every version after it runs through here.
+
+on:
+  push:
+    tags: ['v*']
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      # Required for npm trusted publishing to mint an OIDC token.
+      id-token: write
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 24
+          registry-url: https://registry.npmjs.org
+
+      # Trusted publishing needs npm >= 11.5.1; pin forward rather than trust
+      # whatever the runner image happens to bundle.
+      - run: npm install -g npm@latest
+
+      - name: Verify the tag matches the manifest version
+        if: startsWith(github.ref, 'refs/tags/v')
+        run: |
+          tag="${GITHUB_REF_NAME#v}"
+          manifest="$(node -p "require('./package.json').version")"
+          if [ "$tag" != "$manifest" ]; then
+            echo "tag $GITHUB_REF_NAME does not match package.json version $manifest" >&2
+            exit 1
+          fi
+
+      - run: npm ci
+      - run: npm run typecheck
+      - run: npm test
+      - run: npm run build
+      - run: npm run test:e2e
+      - run: npm run hygiene
+
+      # No --provenance flag: trusted publishing attaches provenance itself.
+      - run: npm publish
