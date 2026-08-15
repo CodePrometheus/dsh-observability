@@ -44,6 +44,10 @@
       "patch": "./cordis.patch.yml"
     }
   },
+  "//trustedDependencies": "node-pty ships no linux prebuild and compiles through node-gyp at install time; the REAL-composition e2e loads it through dsh-subprocess-local. npm 11.16+ skips dependency install scripts unless they are listed here, so without this the e2e cannot boot on linux.",
+  "trustedDependencies": [
+    "node-pty"
+  ],
   "scripts": {
     "build": "tsc -p tsconfig.json",
     "typecheck": "tsc -p tsconfig.json --noEmit && tsc -p tsconfig.test.json",
